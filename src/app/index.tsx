@@ -1,3 +1,4 @@
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -51,12 +52,39 @@ export default function Index() {
     }
 
     Alert.alert("Task Added !");
+    setNewTask({ title: "", description: "" });
+    await getTodos();
+  }
+
+  async function updateTask(id: any, task: typeof newTask) {
+    if (!id) {
+      Alert.alert("No id detected");
+      return;
+    }
+
+    const { data, error }: any = await supabase
+      .from("tasks")
+      .update(task)
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      console.error("Error deleting task:", error.message);
+      return;
+    }
+
+    Alert.alert("Task Updated !");
+    console.log("Updated data: ", data);
+    // const updatedTasks = tasks.map((item: any) =>
+    //   item.id === id ? data : item,
+    // );
+    // setTasks(updatedTasks);
     await getTodos();
   }
 
   async function deleteTask(id: any) {
-    if (!newTask?.title) {
-      Alert.alert("Enter Task title");
+    if (!id) {
+      Alert.alert("No id detected");
       return;
     }
 
@@ -78,7 +106,7 @@ export default function Index() {
         justifyContent: "center",
         alignItems: "center",
         padding: 12,
-        gap: 12,
+        gap: 8,
       }}
     >
       {/* Add New Task */}
@@ -128,8 +156,19 @@ export default function Index() {
               <Text style={styles.taskTitle}>{item.title}</Text>
               <Text>{item.description}</Text>
             </View>
-            <View>
-              <Pressable></Pressable>
+            <View style={styles.taskOptions}>
+              <MaterialDesignIcons
+                name="delete-alert"
+                size={24}
+                color="crimson"
+                onPress={async () => await deleteTask(item?.id)}
+              />
+              <MaterialDesignIcons
+                name="text-box-edit"
+                size={24}
+                color="navy"
+                onPress={async () => await updateTask(item?.id, item)}
+              />
             </View>
           </View>
         )}
@@ -140,10 +179,7 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   tasksContainer: {
-    flexDirection: "row",
-    gap: 4,
-  },
-  taskDetailsContainer: {
+    paddingHorizontal: 8,
     display: "flex",
     gap: 10,
   },
@@ -152,16 +188,27 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderRadius: 8,
-    display: "flex",
-    gap: 6,
+    flexDirection: "row",
+    gap: 4,
     // backgroundColor: "#323232",
     backgroundColor: "#ffff",
+  },
+  taskDetailsContainer: {
+    minWidth: "80%",
+    padding: 4,
+    display: "flex",
+    gap: 6,
   },
   taskTitle: {
     fontWeight: 600,
     fontSize: 16,
     // color: "#ffff",
   },
+  taskOptions: {
+    display: "flex",
+    gap: 6,
+  },
+
   addTaskContainer: {
     minWidth: "70%",
     padding: 12,
