@@ -1,5 +1,5 @@
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-import { router } from "expo-router";
+import { Session } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -10,17 +10,25 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../lib/supabase";
 
-export default function Index() {
+const Home = () => {
   const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
   const [tasks, setTasks] = useState<any>([]);
 
   // console.log(supabaseUrl, supabasePublishableKey);
+  let session: Session | null;
 
   useEffect(() => {
+    fetchSession();
     getTodos();
   }, []);
+
+  async function fetchSession() {
+    const currentSession = await supabase.auth.getSession();
+    session = currentSession?.data?.session;
+    console.log(currentSession);
+  }
 
   const getTodos = async () => {
     const { data, error } = await supabase.from("tasks").select();
@@ -44,7 +52,7 @@ export default function Index() {
 
     const { error }: any = await supabase
       .from("tasks")
-      .insert(newTask)
+      .insert({ ...newTask, email: session?.user.email })
       .single();
 
     if (error) {
@@ -100,6 +108,14 @@ export default function Index() {
     await getTodos();
   }
 
+  async function logout() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Error signing out: ", error?.message);
+    }
+  }
+
   return (
     <View
       style={{
@@ -110,6 +126,13 @@ export default function Index() {
         gap: 8,
       }}
     >
+      <Pressable
+        style={[styles.button, { alignSelf: "flex-end" }]}
+        onPress={logout}
+      >
+        <Text style={styles.buttonText}>LOGOUT</Text>
+      </Pressable>
+
       {/* Add New Task */}
       <View style={styles.addTaskContainer}>
         <Text style={styles.sectionHeading}>Add Task</Text>
@@ -143,9 +166,9 @@ export default function Index() {
         </Pressable>
       </View>
 
-      <Pressable onPress={() => router.navigate("/auth")}>
+      {/* <Pressable onPress={() => router.navigate("/auth")}>
         <Text>GO TO AUTH</Text>
-      </Pressable>
+      </Pressable> */}
 
       {/* Tasks List */}
       <Text style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>
@@ -180,7 +203,9 @@ export default function Index() {
       />
     </View>
   );
-}
+};
+
+export default Home;
 
 const styles = StyleSheet.create({
   tasksContainer: {
