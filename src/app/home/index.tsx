@@ -1,4 +1,5 @@
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -9,7 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 export default function Index() {
   const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
@@ -141,6 +142,10 @@ export default function Index() {
           <Text style={styles.buttonText}>ADD</Text>
         </Pressable>
       </View>
+
+      <Pressable onPress={() => router.navigate("/auth")}>
+        <Text>GO TO AUTH</Text>
+      </Pressable>
 
       {/* Tasks List */}
       <Text style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>
