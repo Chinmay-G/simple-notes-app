@@ -3,9 +3,16 @@ import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+import { useTanStackQueryDevTools } from "@rozenite/tanstack-query-plugin";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  // Enable DevTools in development
+  useTanStackQueryDevTools(queryClient);
 
   useEffect(() => {
     fetchSession();
@@ -24,32 +31,28 @@ export default function RootLayout() {
   }, []);
 
   async function fetchSession() {
-    try {
-      setLoading(true);
-      const currentSession = await supabase.auth.getSession();
-      setSession(currentSession?.data?.session);
-      console.log(currentSession);
-    } catch (err: any) {
-    } finally {
-      setLoading(false);
-    }
+    const currentSession = await supabase.auth.getSession();
+    setSession(currentSession?.data?.session);
+    console.log(currentSession);
   }
 
   console.log("Session DATA: ", session, session ? true : false);
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack initialRouteName={session ? "home" : "auth"}>
-          <Stack.Screen name="auth" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="home"
-            options={{ headerShown: false }}
-            initialParams={{ userEmail: session?.user?.email }}
-          />
-        </Stack>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Stack initialRouteName={session ? "home" : "auth"}>
+            <Stack.Screen name="auth" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="home"
+              options={{ headerShown: false }}
+              initialParams={{ userEmail: session?.user?.email }}
+            />
+          </Stack>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </QueryClientProvider>
     // <Stack>
     //   <Stack.Screen name="home" options={{ headerShown: false }} />
     // </Stack>

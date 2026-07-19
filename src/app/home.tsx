@@ -1,7 +1,9 @@
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
@@ -14,78 +16,101 @@ import { supabase } from "../lib/supabase";
 
 const Home = () => {
   const { userEmail } = useLocalSearchParams();
+  const queryClient = useQueryClient();
 
   const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
-  const [tasks, setTasks] = useState<any>([]);
+  // const [tasks, setTasks] = useState<any>([]);
 
-  // console.log(supabaseUrl, supabasePublishableKey);
-  // let session: Session | null;
+  const {
+    data: tasks,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["todos"],
+    queryFn: getTodos,
+  });
 
-  useEffect(() => {
-    // fetchSession();
-    getTodos();
-  }, []);
+  const addMutation = useMutation({
+    mutationFn: addNewTask,
+    onSuccess: (data) => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      Alert.alert("Task Added !");
+      setNewTask({ title: "", description: "" });
+    },
+    onError: (err) => {
+      console.error(err?.message);
+    },
+  });
 
-  useEffect(() => {
-    const channel = supabase.channel("tasks-channel");
-    channel
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "tasks" },
-        (payload) => {
-          const newTask = payload.new;
-          setTasks((prev: any) => [...prev, newTask]);
-        },
-      )
-      .subscribe((status) => {
-        console.log("Subscription: ", status);
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  // async function fetchSession() {
-  //   const currentSession = await supabase.auth.getSession();
-  //   // session = currentSession?.data?.session;
-  //   console.log(currentSession);
-  // }
-
-  const getTodos = async () => {
-    const { data, error } = await supabase.from("tasks").select();
-
-    if (error) {
-      console.error("Error fetching tasks:", error.message);
-      return;
-    }
-
-    if (data) {
-      console.log(data);
-      setTasks(data);
-    }
-  };
-
-  async function addNewTask() {
+  function handleCreateTask() {
     if (!newTask?.title) {
       Alert.alert("Enter Task title");
       return;
     }
 
-    const { error }: any = await supabase
+    addMutation.mutate();
+  }
+
+  // TESTING
+  // useEffect(() => {
+  //   getTodos();
+  // }, []);
+
+  // useEffect(() => {
+  //   const channel = supabase.channel("tasks-channel");
+  //   channel
+  //     .on(
+  //       "postgres_changes",
+  //       { event: "INSERT", schema: "public", table: "tasks" },
+  //       (payload) => {
+  //         const newTask = payload.new;
+  //         setTasks((prev: any) => [...prev, newTask]);
+  //       },
+  //     )
+  //     .subscribe((status) => {
+  //       console.log("Subscription: ", status);
+  //     });
+
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, []);
+
+  async function getTodos() {
+    const { data, error } = await supabase.from("tasks").select();
+
+    if (error) {
+      console.error("Error fetching tasks:", error.message);
+      throw new Error(`Error fetching tasks: ${error?.message}`);
+    }
+    return data;
+    // if (data) {
+    //   console.log(data);
+    //   setTasks(data);
+    // }
+  }
+
+  async function addNewTask() {
+    // if (!newTask?.title) {
+    //   Alert.alert("Enter Task title");
+    //   return;
+    // }
+
+    const { data, error }: any = await supabase
       .from("tasks")
-      // .insert({ ...newTask, email: session?.user.email })
       .insert({ ...newTask, email: userEmail })
       .select()
       .single();
 
     if (error) {
-      console.error("Error adding task:", error.message);
-      return;
+      throw new Error(`Error adding task: ${error?.message}`);
     }
 
-    Alert.alert("Task Added !");
-    setNewTask({ title: "", description: "" });
+    return data;
+
+    // Alert.alert("Task Added !");
+    // setNewTask({ title: "", description: "" });
   }
 
   console.log("TASKS: ", tasks);
@@ -130,7 +155,8 @@ const Home = () => {
     }
 
     Alert.alert("Task Deleted !");
-    await getTodos();
+    // await getTodos();
+    queryClient.invalidateQueries({ queryKey: ["todos"] });
   }
 
   async function logout() {
@@ -186,7 +212,8 @@ const Home = () => {
           />
         </View>
 
-        <Pressable style={styles.button} onPress={addNewTask}>
+        {/* <Pressable style={styles.button} onPress={addNewTask}> */}
+        <Pressable style={styles.button} onPress={handleCreateTask}>
           <Text style={styles.buttonText}>ADD</Text>
         </Pressable>
       </View>
@@ -199,33 +226,41 @@ const Home = () => {
       <Text style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>
         Tasks List
       </Text>
-      <FlatList
-        data={tasks}
-        contentContainerStyle={styles.tasksContainer}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View key={item.id} style={styles.taskContainer}>
-            <View key={item.id} style={styles.taskDetailsContainer}>
-              <Text style={styles.taskTitle}>{item.title}</Text>
-              <Text>{item.description}</Text>
-            </View>
-            <View style={styles.taskOptions}>
-              <MaterialDesignIcons
-                name="delete-alert"
-                size={24}
-                color="crimson"
-                onPress={async () => await deleteTask(item?.id)}
-              />
-              <MaterialDesignIcons
-                name="text-box-edit"
-                size={24}
-                color="navy"
-                onPress={async () => await updateTask(item?.id, item)}
-              />
-            </View>
-          </View>
-        )}
-      />
+
+      {isPending && <ActivityIndicator size={30} color={"#000"} />}
+      {isError && <Text>Error fetching tasks</Text>}
+
+      {tasks && (
+        <>
+          <FlatList
+            data={tasks}
+            contentContainerStyle={styles.tasksContainer}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View key={item.id} style={styles.taskContainer}>
+                <View key={item.id} style={styles.taskDetailsContainer}>
+                  <Text style={styles.taskTitle}>{item.title}</Text>
+                  <Text>{item.description}</Text>
+                </View>
+                <View style={styles.taskOptions}>
+                  <MaterialDesignIcons
+                    name="delete-alert"
+                    size={24}
+                    color="crimson"
+                    onPress={async () => await deleteTask(item?.id)}
+                  />
+                  <MaterialDesignIcons
+                    name="text-box-edit"
+                    size={24}
+                    color="navy"
+                    onPress={async () => await updateTask(item?.id, item)}
+                  />
+                </View>
+              </View>
+            )}
+          />
+        </>
+      )}
     </View>
   );
 };

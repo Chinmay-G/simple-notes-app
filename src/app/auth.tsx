@@ -8,13 +8,12 @@ const Login = () => {
 
   async function handleSubmit() {
     if (isSignUp) {
-      const { data, error: signUpError } =
-        await supabase.auth.signUp(userInput);
+      const { error: signUpError } = await supabase.auth.signUp(userInput);
       if (signUpError) {
         console.error("Error Signing up", signUpError?.message);
       }
     } else {
-      const { data, error: signInError } =
+      const { error: signInError } =
         await supabase.auth.signInWithPassword(userInput);
       if (signInError) {
         console.error("Error Signing in", signInError?.message);
