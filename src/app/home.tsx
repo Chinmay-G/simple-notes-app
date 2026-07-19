@@ -1,5 +1,5 @@
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-import { Session } from "@supabase/supabase-js";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -13,22 +13,44 @@ import {
 import { supabase } from "../lib/supabase";
 
 const Home = () => {
+  const { userEmail } = useLocalSearchParams();
+
   const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
   const [tasks, setTasks] = useState<any>([]);
 
   // console.log(supabaseUrl, supabasePublishableKey);
-  let session: Session | null;
+  // let session: Session | null;
 
   useEffect(() => {
-    fetchSession();
+    // fetchSession();
     getTodos();
   }, []);
 
-  async function fetchSession() {
-    const currentSession = await supabase.auth.getSession();
-    session = currentSession?.data?.session;
-    console.log(currentSession);
-  }
+  useEffect(() => {
+    const channel = supabase.channel("tasks-channel");
+    channel
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "tasks" },
+        (payload) => {
+          const newTask = payload.new;
+          setTasks((prev: any) => [...prev, newTask]);
+        },
+      )
+      .subscribe((status) => {
+        console.log("Subscription: ", status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // async function fetchSession() {
+  //   const currentSession = await supabase.auth.getSession();
+  //   // session = currentSession?.data?.session;
+  //   console.log(currentSession);
+  // }
 
   const getTodos = async () => {
     const { data, error } = await supabase.from("tasks").select();
@@ -38,7 +60,7 @@ const Home = () => {
       return;
     }
 
-    if (data && data.length > 0) {
+    if (data) {
       console.log(data);
       setTasks(data);
     }
@@ -52,7 +74,9 @@ const Home = () => {
 
     const { error }: any = await supabase
       .from("tasks")
-      .insert({ ...newTask, email: session?.user.email })
+      // .insert({ ...newTask, email: session?.user.email })
+      .insert({ ...newTask, email: userEmail })
+      .select()
       .single();
 
     if (error) {
@@ -62,8 +86,9 @@ const Home = () => {
 
     Alert.alert("Task Added !");
     setNewTask({ title: "", description: "" });
-    await getTodos();
   }
+
+  console.log("TASKS: ", tasks);
 
   async function updateTask(id: any, task: typeof newTask) {
     if (!id) {
@@ -209,6 +234,7 @@ export default Home;
 
 const styles = StyleSheet.create({
   tasksContainer: {
+    width: "100%",
     paddingHorizontal: 8,
     display: "flex",
     gap: 10,
@@ -224,7 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffff",
   },
   taskDetailsContainer: {
-    minWidth: "80%",
+    width: "90%",
     padding: 4,
     display: "flex",
     gap: 6,

@@ -42,7 +42,11 @@ export default function RootLayout() {
       <SafeAreaView style={{ flex: 1 }}>
         <Stack initialRouteName={session ? "home" : "auth"}>
           <Stack.Screen name="auth" options={{ headerShown: false }} />
-          <Stack.Screen name="home" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="home"
+            options={{ headerShown: false }}
+            initialParams={{ userEmail: session?.user?.email }}
+          />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>

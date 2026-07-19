@@ -41,7 +41,7 @@ const Login = () => {
 
       <View style={styles.inputsContainer}>
         <View>
-          <Text style={styles.inputlabel}>Title</Text>
+          <Text style={styles.inputlabel}>Email</Text>
           <TextInput
             placeholder="Email"
             value={userInput?.email}
@@ -53,12 +53,11 @@ const Login = () => {
           />
         </View>
         <View>
-          <Text style={styles.inputlabel}>Description</Text>
+          <Text style={styles.inputlabel}>Password</Text>
           <TextInput
-            multiline
             textContentType="password"
-            numberOfLines={3}
-            placeholder="Task password..."
+            secureTextEntry={true}
+            placeholder="password..."
             value={userInput?.password}
             onChangeText={(text) =>
               setUserInput((prev: any) => ({ ...prev, password: text }))
