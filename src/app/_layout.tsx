@@ -5,6 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useTanStackQueryDevTools } from "@rozenite/tanstack-query-plugin";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StatusBar } from "react-native";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar barStyle={"dark-content"} />
           <Stack initialRouteName={session ? "home" : "auth"}>
             <Stack.Screen name="auth" options={{ headerShown: false }} />
             <Stack.Screen
