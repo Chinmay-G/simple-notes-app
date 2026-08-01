@@ -1,6 +1,5 @@
-import { updateNote } from "@/services/notes";
+import { useUpdateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
     Alert,
@@ -20,18 +19,7 @@ type params = {
 
 const UpdateModal = ({ isOpen, close, initialTask }: params) => {
   const [task, setTask] = useState<any>(initialTask);
-  const queryClient = useQueryClient();
-
-  const updateMutation = useMutation({
-    mutationFn: updateNote,
-    onSuccess: (data) => {
-      Alert.alert("Note Updated !");
-      console.log("Updated data: ", data);
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      close();
-    },
-    onError: (err) => console.error(err?.message),
-  });
+  const updateMutation = useUpdateNote();
 
   async function handleUpdateTask() {
     if (!task.id) {
@@ -44,7 +32,7 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
       return;
     }
 
-    updateMutation.mutate(task);
+    updateMutation.mutate(task, { onSuccess: () => close() });
   }
 
   return (
