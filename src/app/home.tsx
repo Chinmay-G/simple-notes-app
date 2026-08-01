@@ -1,5 +1,6 @@
+import UpdateModal from "@/components/UpdateModal";
+import { useCreateNote, useDeleteNote, useNotes } from "@/hooks/query";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -16,45 +17,40 @@ import { supabase } from "../lib/supabase";
 
 const Home = () => {
   const { userEmail } = useLocalSearchParams();
-  const queryClient = useQueryClient();
 
   const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
+  const [updateTask, setUpdateTask] = useState<any>(null);
   // const [tasks, setTasks] = useState<any>([]);
 
-  const {
-    data: tasks,
-    isPending,
-    isError,
-  } = useQuery({
-    queryKey: ["todos"],
-    queryFn: getTodos,
-  });
+  const { data: tasks, isPending, isError } = useNotes();
 
-  const addMutation = useMutation({
-    mutationFn: addNewTask,
-    onSuccess: (data) => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      Alert.alert("Task Added !");
-      setNewTask({ title: "", description: "" });
-    },
-    onError: (err) => {
-      console.error(err?.message);
-    },
-  });
+  const addMutation = useCreateNote();
+  const deleteMutation = useDeleteNote();
+
+  function handleDeleteNote(id: any) {
+    if (!id) {
+      Alert.alert("No id detected !");
+      return;
+    }
+    deleteMutation.mutate(id, {
+      onSuccess: () => setNewTask({ title: "", description: "" }),
+    });
+  }
 
   function handleCreateTask() {
     if (!newTask?.title) {
-      Alert.alert("Enter Task title");
+      Alert.alert("Enter Note title");
       return;
     }
-
-    addMutation.mutate();
+    addMutation.mutate(
+      { newNote: newTask, userEmail: userEmail as string },
+      { onSuccess: () => setNewTask({ title: "", description: "" }) },
+    );
   }
 
   // TESTING
   // useEffect(() => {
-  //   getTodos();
+  //   getNotes();
   // }, []);
 
   // useEffect(() => {
@@ -77,87 +73,7 @@ const Home = () => {
   //   };
   // }, []);
 
-  async function getTodos() {
-    const { data, error } = await supabase.from("tasks").select();
-
-    if (error) {
-      console.error("Error fetching tasks:", error.message);
-      throw new Error(`Error fetching tasks: ${error?.message}`);
-    }
-    return data;
-    // if (data) {
-    //   console.log(data);
-    //   setTasks(data);
-    // }
-  }
-
-  async function addNewTask() {
-    // if (!newTask?.title) {
-    //   Alert.alert("Enter Task title");
-    //   return;
-    // }
-
-    const { data, error }: any = await supabase
-      .from("tasks")
-      .insert({ ...newTask, email: userEmail })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Error adding task: ${error?.message}`);
-    }
-
-    return data;
-
-    // Alert.alert("Task Added !");
-    // setNewTask({ title: "", description: "" });
-  }
-
   console.log("TASKS: ", tasks);
-
-  async function updateTask(id: any, task: typeof newTask) {
-    if (!id) {
-      Alert.alert("No id detected");
-      return;
-    }
-
-    const { data, error }: any = await supabase
-      .from("tasks")
-      .update(task)
-      .eq("id", id)
-      .select();
-
-    if (error) {
-      console.error("Error deleting task:", error.message);
-      return;
-    }
-
-    Alert.alert("Task Updated !");
-    console.log("Updated data: ", data);
-    // const updatedTasks = tasks.map((item: any) =>
-    //   item.id === id ? data : item,
-    // );
-    // setTasks(updatedTasks);
-    await getTodos();
-  }
-
-  async function deleteTask(id: any) {
-    if (!id) {
-      Alert.alert("No id detected");
-      return;
-    }
-
-    const { error }: any = await supabase.from("tasks").delete().eq("id", id);
-
-    if (error) {
-      console.error("Error deleting task:", error.message);
-      return;
-    }
-
-    Alert.alert("Task Deleted !");
-    // await getTodos();
-    queryClient.invalidateQueries({ queryKey: ["todos"] });
-  }
 
   async function logout() {
     const { error } = await supabase.auth.signOut();
@@ -212,7 +128,7 @@ const Home = () => {
           />
         </View>
 
-        {/* <Pressable style={styles.button} onPress={addNewTask}> */}
+        {/* <Pressable style={styles.button} onPress={createNote}> */}
         <Pressable style={styles.button} onPress={handleCreateTask}>
           <Text style={styles.buttonText}>ADD</Text>
         </Pressable>
@@ -247,19 +163,27 @@ const Home = () => {
                     name="delete-alert"
                     size={24}
                     color="crimson"
-                    onPress={async () => await deleteTask(item?.id)}
+                    onPress={() => handleDeleteNote(item?.id)}
                   />
                   <MaterialDesignIcons
                     name="text-box-edit"
                     size={24}
                     color="navy"
-                    onPress={async () => await updateTask(item?.id, item)}
+                    onPress={() => setUpdateTask(item)}
                   />
                 </View>
               </View>
             )}
           />
         </>
+      )}
+
+      {updateTask && (
+        <UpdateModal
+          isOpen={updateTask ? true : false}
+          close={() => setUpdateTask(null)}
+          initialTask={updateTask}
+        />
       )}
     </View>
   );
