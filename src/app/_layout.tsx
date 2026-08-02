@@ -43,7 +43,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1 }}>
-          <StatusBar barStyle={"dark-content"} />
+          <StatusBar barStyle={"dark-content"} backgroundColor={"white"} />
           <Stack initialRouteName={session ? "home" : "auth"}>
             <Stack.Screen name="auth" options={{ headerShown: false }} />
             <Stack.Screen

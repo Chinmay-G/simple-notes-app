@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const commonStyles = StyleSheet.create({
   textBox: {
-    padding: 4,
+    padding: 8,
     borderWidth: 0.5,
     borderRadius: 6,
   },

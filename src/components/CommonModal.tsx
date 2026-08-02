@@ -38,9 +38,13 @@ const CommonModal = ({
             style={styles.closeButton}
           />
           {title && <Text style={styles.heading}>{title}</Text>}
-          <ScrollView
-            style={[{ flex: 1, height: "100%" }]}
+          {/* <ScrollView
+            style={[{ flex: 1 }]}
             contentContainerStyle={[styles.container, containerStyle]}
+          > */}
+          <ScrollView
+            contentContainerStyle={[styles.scrollContent, containerStyle]}
+            keyboardShouldPersistTaps="handled"
           >
             {children}
           </ScrollView>
@@ -54,7 +58,7 @@ export default CommonModal;
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: "#09090997",
+    backgroundColor: "#030303cf",
     flex: 1,
     display: "flex",
     justifyContent: "center",
@@ -63,14 +67,26 @@ const styles = StyleSheet.create({
   },
   modal: {
     backgroundColor: "white",
-    minWidth: "50%",
-    maxWidth: "90%",
-    minHeight: "10%",
-    maxHeight: "80%",
-    height: 230,
-    borderRadius: 10,
+    // minWidth: "50%",
+    // maxWidth: "90%",
+    width: "80%",
+    minHeight: "30%",
+    maxHeight: "70%",
+    // height: 230,
+    borderRadius: 12,
     position: "relative",
     zIndex: 100,
+    boxShadow: "0px 2px 6px black",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+
+    padding: 2,
+  },
+  scrollContent: {
+    // paddingBottom: 10, // extra space at bottom
   },
   closeButton: {
     position: "absolute",
@@ -78,6 +94,7 @@ const styles = StyleSheet.create({
     right: -20,
     backgroundColor: "white",
     borderRadius: 5,
+    boxShadow: "0px 1.5px 4px black",
   },
   heading: {
     fontSize: 20,
@@ -88,6 +105,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 8,
-    flex: 1,
+    // height: "80%",
+    // flex: 1,
   },
 });

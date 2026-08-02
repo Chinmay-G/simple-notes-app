@@ -1,57 +1,23 @@
-import UpdateModal from "@/components/UpdateModal";
-import { useCreateNote, useDeleteNote, useNotes } from "@/hooks/query";
-import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons";
+import Header from "@/components/Header";
+import AddNote from "@/features/notes/AddNote";
+import NoteCard from "@/features/notes/NoteCard";
+import { useNotes } from "@/hooks/query";
 import { useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
-  Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
-import { supabase } from "../lib/supabase";
 
 const Home = () => {
   const { userEmail } = useLocalSearchParams();
 
-  const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
-  const [updateTask, setUpdateTask] = useState<any>(null);
   // const [tasks, setTasks] = useState<any>([]);
 
   const { data: tasks, isPending, isError } = useNotes();
-
-  const addMutation = useCreateNote();
-  const deleteMutation = useDeleteNote();
-
-  function handleDeleteNote(id: any) {
-    if (!id) {
-      Alert.alert("No id detected !");
-      return;
-    }
-    deleteMutation.mutate(id, {
-      onSuccess: () => setNewTask({ title: "", description: "" }),
-    });
-  }
-
-  function handleCreateTask() {
-    if (!newTask?.title) {
-      Alert.alert("Enter Note title");
-      return;
-    }
-    addMutation.mutate(
-      { newNote: newTask, userEmail: userEmail as string },
-      { onSuccess: () => setNewTask({ title: "", description: "" }) },
-    );
-  }
-
-  // TESTING
-  // useEffect(() => {
-  //   getNotes();
-  // }, []);
 
   // useEffect(() => {
   //   const channel = supabase.channel("tasks-channel");
@@ -75,186 +41,64 @@ const Home = () => {
 
   console.log("TASKS: ", tasks);
 
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Error signing out: ", error?.message);
-    }
-  }
-
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 12,
-        gap: 8,
-      }}
-    >
-      <Pressable
-        style={[styles.button, { alignSelf: "flex-end" }]}
-        onPress={logout}
-      >
-        <Text style={styles.buttonText}>LOGOUT</Text>
-      </Pressable>
+    <>
+      <Header userEmail={userEmail} />
+      <View style={styles.screen}>
+        {/* Add New Task */}
+        <AddNote userEmail={userEmail} />
 
-      {/* Add New Task */}
-      <View style={styles.addTaskContainer}>
-        <Text style={styles.sectionHeading}>Add Task</Text>
-        <View>
-          <Text style={styles.inputlabel}>Title</Text>
-          <TextInput
-            placeholder="Task title..."
-            value={newTask?.title}
-            onChangeText={(text) =>
-              setNewTask((prev: any) => ({ ...prev, title: text }))
-            }
-            style={styles.textBox}
-          />
-        </View>
-        <View>
-          <Text style={styles.inputlabel}>Description</Text>
-          <TextInput
-            multiline
-            numberOfLines={3}
-            placeholder="Task description..."
-            value={newTask?.description}
-            onChangeText={(text) =>
-              setNewTask((prev: any) => ({ ...prev, description: text }))
-            }
-            style={styles.textBox}
-          />
-        </View>
+        {/* Tasks List */}
+        <View style={styles.notesContainer}>
+          <Text style={styles.notesHeading}>Notes</Text>
+          {isPending && <ActivityIndicator size={30} color={"#000"} />}
+          {isError && <Text>Error fetching tasks</Text>}
 
-        {/* <Pressable style={styles.button} onPress={createNote}> */}
-        <Pressable style={styles.button} onPress={handleCreateTask}>
-          <Text style={styles.buttonText}>ADD</Text>
-        </Pressable>
+          {tasks && (
+            <FlatList
+              data={tasks}
+              contentContainerStyle={styles.tasksContainer}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => <NoteCard note={item} />}
+            />
+          )}
+        </View>
       </View>
-
-      {/* <Pressable onPress={() => router.navigate("/auth")}>
-        <Text>GO TO AUTH</Text>
-      </Pressable> */}
-
-      {/* Tasks List */}
-      <Text style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>
-        Tasks List
-      </Text>
-
-      {isPending && <ActivityIndicator size={30} color={"#000"} />}
-      {isError && <Text>Error fetching tasks</Text>}
-
-      {tasks && (
-        <>
-          <FlatList
-            data={tasks}
-            contentContainerStyle={styles.tasksContainer}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View key={item.id} style={styles.taskContainer}>
-                <View key={item.id} style={styles.taskDetailsContainer}>
-                  <Text style={styles.taskTitle}>{item.title}</Text>
-                  <Text>{item.description}</Text>
-                </View>
-                <View style={styles.taskOptions}>
-                  <MaterialDesignIcons
-                    name="delete-alert"
-                    size={24}
-                    color="crimson"
-                    onPress={() => handleDeleteNote(item?.id)}
-                  />
-                  <MaterialDesignIcons
-                    name="text-box-edit"
-                    size={24}
-                    color="navy"
-                    onPress={() => setUpdateTask(item)}
-                  />
-                </View>
-              </View>
-            )}
-          />
-        </>
-      )}
-
-      {updateTask && (
-        <UpdateModal
-          isOpen={updateTask ? true : false}
-          close={() => setUpdateTask(null)}
-          initialTask={updateTask}
-        />
-      )}
-    </View>
+    </>
   );
 };
 
 export default Home;
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 12,
+    gap: 18,
+  },
+  notesContainer: { flex: 1, alignItems: "center", width: "100%" },
+  notesHeading: {
+    fontSize: 20,
+    fontWeight: 700,
+    marginTop: 12,
+    backgroundColor: "#3b3b3bee",
+    width: "94%",
+    padding: 8,
+    paddingHorizontal: "15%",
+    borderTopRightRadius: 8,
+    borderTopLeftRadius: 8,
+    color: "white",
+    boxShadow: "inset 1px 1px 3px black",
+  },
   tasksContainer: {
     width: "100%",
-    paddingHorizontal: 8,
-    display: "flex",
-    gap: 10,
-  },
-  taskContainer: {
-    minWidth: "80%",
     padding: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    flexDirection: "row",
-    gap: 4,
-    // backgroundColor: "#323232",
-    backgroundColor: "#ffff",
-  },
-  taskDetailsContainer: {
-    width: "90%",
-    padding: 4,
-    display: "flex",
-    gap: 6,
-  },
-  taskTitle: {
-    fontWeight: 600,
-    fontSize: 16,
-    // color: "#ffff",
-  },
-  taskOptions: {
-    display: "flex",
-    gap: 6,
-  },
-
-  addTaskContainer: {
-    minWidth: "70%",
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 12,
     display: "flex",
     gap: 12,
-    backgroundColor: "#ffff",
-  },
-  sectionHeading: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  textBox: {
-    padding: 4,
-    borderWidth: 0.5,
-    borderRadius: 6,
-  },
-  inputlabel: {
-    fontWeight: 500,
-  },
-  button: {
-    padding: 8,
-    backgroundColor: "#000",
-    borderRadius: 6,
-    boxShadow: "0px 1px 2px gray",
-  },
-  buttonText: {
-    color: "#ffff",
-    fontWeight: 800,
-    fontSize: 16,
-    textAlign: "center",
+    backgroundColor: "#3b3b3bee",
+    boxShadow: "inset 1px 1px 4px black",
+    borderRadius: 12,
   },
 });

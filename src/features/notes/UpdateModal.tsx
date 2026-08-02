@@ -2,14 +2,14 @@ import { useUpdateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
 import React, { useState } from "react";
 import {
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import CommonModal from "./CommonModal";
+import CommonModal from "../../components/CommonModal";
 
 type params = {
   isOpen: boolean;
