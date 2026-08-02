@@ -1,6 +1,6 @@
 import { useUpdateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -18,21 +18,23 @@ type params = {
 };
 
 const UpdateModal = ({ isOpen, close, initialTask }: params) => {
-  const [task, setTask] = useState<any>(initialTask);
+  const [note, setNote] = useState<any>(initialTask);
   const updateMutation = useUpdateNote();
 
-  async function handleUpdateTask() {
-    if (!task.id) {
+  useEffect(() => setNote(initialTask), [initialTask]);
+
+  async function handleUpdateNote() {
+    if (!note.id) {
       Alert.alert("No id detected");
       return;
     }
 
-    if (!task?.title.trim()) {
+    if (!note?.title.trim()) {
       Alert.alert("Enter title to continue.");
       return;
     }
 
-    updateMutation.mutate(task, { onSuccess: () => close() });
+    updateMutation.mutate(note, { onSuccess: () => close() });
   }
 
   return (
@@ -47,9 +49,9 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
           <Text style={commonStyles.inputlabel}>Title</Text>
           <TextInput
             placeholder="Task title..."
-            value={task?.title}
+            value={note?.title}
             onChangeText={(text) =>
-              setTask((prev: any) => ({ ...prev, title: text }))
+              setNote((prev: any) => ({ ...prev, title: text }))
             }
             style={commonStyles.textBox}
           />
@@ -60,15 +62,15 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
             multiline
             numberOfLines={3}
             placeholder="Task description..."
-            value={task?.description}
+            value={note?.description}
             onChangeText={(text) =>
-              setTask((prev: any) => ({ ...prev, description: text }))
+              setNote((prev: any) => ({ ...prev, description: text }))
             }
             style={commonStyles.textBox}
           />
         </View>
 
-        <Pressable style={commonStyles.button} onPress={handleUpdateTask}>
+        <Pressable style={commonStyles.button} onPress={handleUpdateNote}>
           <Text style={commonStyles.buttonText}>UPDATE</Text>
         </Pressable>
       </View>

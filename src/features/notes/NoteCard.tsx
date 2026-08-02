@@ -40,13 +40,13 @@ const NoteCard = ({ note: item }: { note: any }) => {
         </View>
       </View>
 
-      {updateTask && (
-        <UpdateModal
-          isOpen={updateTask ? true : false}
-          close={() => setUpdateTask(null)}
-          initialTask={updateTask}
-        />
-      )}
+      {/* {updateTask && ( */}
+      <UpdateModal
+        isOpen={updateTask ? true : false}
+        close={() => setUpdateTask(null)}
+        initialTask={updateTask}
+      />
+      {/* )} */}
     </>
   );
 };
@@ -63,7 +63,10 @@ const styles = StyleSheet.create({
     gap: 4,
     // backgroundColor: "#323232",
     backgroundColor: "#ffff",
-    boxShadow: "0px 1.5px 2px whitesmoke",
+    boxShadow: "0px 1.5px 2px gray",
+
+    alignItems: "center",
+    marginVertical: 4,
   },
   detailsContainer: {
     width: "90%",

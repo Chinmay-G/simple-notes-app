@@ -1,28 +1,28 @@
+import CommonButton from "@/components/CommonButton";
 import { useCreateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
 import React, { useState } from "react";
 import {
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
 
 const AddNote = ({ userEmail }: any) => {
-  const [newTask, setNewTask] = useState<any>({ title: "", description: "" });
+  const [newNote, setNewNote] = useState<any>({ title: "", description: "" });
 
   const addMutation = useCreateNote();
 
-  function handleCreateTask() {
-    if (!newTask?.title) {
+  function handleCreateNote() {
+    if (!newNote?.title) {
       Alert.alert("Enter Note title");
       return;
     }
     addMutation.mutate(
-      { newNote: newTask, userEmail: userEmail as string },
-      { onSuccess: () => setNewTask({ title: "", description: "" }) },
+      { newNote: newNote, userEmail: userEmail as string },
+      { onSuccess: () => setNewNote({ title: "", description: "" }) },
     );
   }
 
@@ -33,9 +33,9 @@ const AddNote = ({ userEmail }: any) => {
         <Text style={commonStyles.inputlabel}>Title</Text>
         <TextInput
           placeholder="Task title..."
-          value={newTask?.title}
+          value={newNote?.title}
           onChangeText={(text) =>
-            setNewTask((prev: any) => ({ ...prev, title: text }))
+            setNewNote((prev: any) => ({ ...prev, title: text }))
           }
           style={commonStyles.textBox}
         />
@@ -46,18 +46,22 @@ const AddNote = ({ userEmail }: any) => {
           multiline
           numberOfLines={3}
           placeholder="Task description..."
-          value={newTask?.description}
+          value={newNote?.description}
           onChangeText={(text) =>
-            setNewTask((prev: any) => ({ ...prev, description: text }))
+            setNewNote((prev: any) => ({ ...prev, description: text }))
           }
           style={commonStyles.textBox}
         />
       </View>
 
-      {/* <Pressable style={commonStyles.button} onPress={createNote}> */}
-      <Pressable style={commonStyles.button} onPress={handleCreateTask}>
+      {/* <Pressable style={commonStyles.button} onPress={handleCreateNote}>
         <Text style={commonStyles.buttonText}>ADD</Text>
-      </Pressable>
+      </Pressable> */}
+      <CommonButton
+        title="ADD"
+        onPress={handleCreateNote}
+        loading={addMutation.isPending}
+      />
     </View>
   );
 };

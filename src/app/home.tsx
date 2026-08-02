@@ -1,9 +1,10 @@
+import CommonButton from "@/components/CommonButton";
 import Header from "@/components/Header";
 import AddNote from "@/features/notes/AddNote";
 import NoteCard from "@/features/notes/NoteCard";
 import { useNotes } from "@/hooks/query";
 import { useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,10 +15,9 @@ import {
 
 const Home = () => {
   const { userEmail } = useLocalSearchParams();
+  const [showAddNote, setShowAddNote] = useState(false);
 
-  // const [tasks, setTasks] = useState<any>([]);
-
-  const { data: tasks, isPending, isError } = useNotes();
+  const { data: notes, isPending, isError } = useNotes();
 
   // useEffect(() => {
   //   const channel = supabase.channel("tasks-channel");
@@ -39,24 +39,30 @@ const Home = () => {
   //   };
   // }, []);
 
-  console.log("TASKS: ", tasks);
+  console.log("NOTES: ", notes);
 
   return (
     <>
       <Header userEmail={userEmail} />
       <View style={styles.screen}>
-        {/* Add New Task */}
-        <AddNote userEmail={userEmail} />
+        <CommonButton
+          title={showAddNote ? "Add Note -" : "Add Note +"}
+          onPress={() => setShowAddNote((prev) => !prev)}
+          style={{ alignSelf: "flex-end" }}
+        />
+        {/* Add New Note */}
+        {showAddNote && <AddNote userEmail={userEmail} />}
 
-        {/* Tasks List */}
+        {/* Notes List */}
         <View style={styles.notesContainer}>
           <Text style={styles.notesHeading}>Notes</Text>
-          {isPending && <ActivityIndicator size={30} color={"#000"} />}
-          {isError && <Text>Error fetching tasks</Text>}
 
-          {tasks && (
+          {isPending && <ActivityIndicator size={30} color={"#000"} />}
+          {isError && <Text>Error fetching notes</Text>}
+
+          {notes && (
             <FlatList
-              data={tasks}
+              data={notes}
               contentContainerStyle={styles.tasksContainer}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <NoteCard note={item} />}
@@ -78,27 +84,35 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 18,
   },
-  notesContainer: { flex: 1, alignItems: "center", width: "100%" },
+  notesContainer: {
+    flex: 1,
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: "whitesmoke",
+    boxShadow: "inset 1px 1px 4px black",
+    borderRadius: 6,
+  },
   notesHeading: {
     fontSize: 20,
     fontWeight: 700,
     marginTop: 12,
-    backgroundColor: "#3b3b3bee",
+    backgroundColor: "white",
     width: "94%",
     padding: 8,
     paddingHorizontal: "15%",
-    borderTopRightRadius: 8,
-    borderTopLeftRadius: 8,
-    color: "white",
-    boxShadow: "inset 1px 1px 3px black",
+    borderRadius: 4,
+    // borderTopRightRadius: 8,
+    // borderTopLeftRadius: 8,
+    // color: "white",
+    boxShadow: "inset 1px -1px 2px black",
   },
   tasksContainer: {
     width: "100%",
     padding: 12,
     display: "flex",
     gap: 12,
-    backgroundColor: "#3b3b3bee",
-    boxShadow: "inset 1px 1px 4px black",
+    // backgroundColor: "whitesmoke",
+    // boxShadow: "inset 1px 1px 4px black",
     borderRadius: 12,
   },
 });
