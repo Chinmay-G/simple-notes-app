@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { Alert } from "react-native";
+import * as burnt from "burnt";
 
 // Get Notes
 export async function getNotes() {
@@ -36,7 +36,7 @@ export async function createNote({
 // Delete a Note
 export async function deleteNote(id: any) {
   if (!id) {
-    Alert.alert("No id detected");
+    burnt.toast({ title: "No id detected", preset: "error" });
     return;
   }
 

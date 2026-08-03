@@ -1,6 +1,7 @@
 import { createNote, deleteNote, getNotes, updateNote } from "@/services/notes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Alert } from "react-native";
+
+import * as burnt from "burnt";
 
 // Use Get Notes
 export function useNotes() {
@@ -22,7 +23,7 @@ export function useCreateNote() {
     onSuccess: (data) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["todos"] });
-      Alert.alert("Task Added !");
+      burnt.toast({ title: "Task Added !", preset: "done" });
     },
     onError: (err) => {
       console.error(err?.message);
@@ -37,7 +38,7 @@ export function useUpdateNote() {
   const updateMutation = useMutation({
     mutationFn: updateNote,
     onSuccess: (data) => {
-      Alert.alert("Note Updated !");
+      burnt.toast({ title: "Note Updated !", preset: "done" });
       console.log("Updated data: ", data);
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
@@ -54,7 +55,7 @@ export function useDeleteNote() {
     onSuccess: (data) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["todos"] });
-      Alert.alert("Note Deleted !");
+      burnt.toast({ title: "Note Deleted !", preset: "done" });
     },
     onError: (err) => {
       console.error(err?.message);

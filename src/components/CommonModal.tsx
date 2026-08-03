@@ -2,10 +2,10 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 import React, { ReactNode } from "react";
 import {
   Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   ViewStyle,
 } from "react-native";
 
@@ -25,11 +25,17 @@ const CommonModal = ({
   containerStyle,
 }: params) => {
   return (
-    <Modal visible={isOpen} onRequestClose={close} transparent>
+    <Modal
+      visible={isOpen}
+      onRequestClose={close}
+      transparent
+      statusBarTranslucent
+      animationType="fade"
+    >
       {/* Overlay */}
-      <View style={styles.overlay}>
+      <Pressable style={styles.overlay} onPress={close}>
         {/* Modal */}
-        <View style={styles.modal}>
+        <Pressable style={styles.modal}>
           <MaterialDesignIcons
             name="close"
             size={22}
@@ -48,8 +54,8 @@ const CommonModal = ({
           >
             {children}
           </ScrollView>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
@@ -70,7 +76,7 @@ const styles = StyleSheet.create({
     // minWidth: "50%",
     // maxWidth: "90%",
     width: "80%",
-    minHeight: "30%",
+    minHeight: "20%",
     maxHeight: "70%",
     // height: 230,
     borderRadius: 12,

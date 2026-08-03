@@ -1,21 +1,12 @@
-import { useDeleteNote } from "@/hooks/query";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import UpdateModal from "./UpdateModal";
 
 const NoteCard = ({ note: item }: { note: any }) => {
   const [updateTask, setUpdateTask] = useState<any>(null);
-
-  const deleteMutation = useDeleteNote();
-
-  function handleDeleteNote(id: any) {
-    if (!id) {
-      Alert.alert("No id detected !");
-      return;
-    }
-    deleteMutation.mutate(id);
-  }
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<any>(null);
 
   return (
     <>
@@ -29,7 +20,8 @@ const NoteCard = ({ note: item }: { note: any }) => {
             name="delete-alert"
             size={24}
             color="crimson"
-            onPress={() => handleDeleteNote(item?.id)}
+            // onPress={() => handleDeleteNote(item?.id)}
+            onPress={() => setIsDeleteModalOpen(item)}
           />
           <MaterialDesignIcons
             name="text-box-edit"
@@ -47,6 +39,14 @@ const NoteCard = ({ note: item }: { note: any }) => {
         initialTask={updateTask}
       />
       {/* )} */}
+
+      {setIsDeleteModalOpen && (
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen ? true : false}
+          close={() => setIsDeleteModalOpen(false)}
+          note={isDeleteModalOpen}
+        />
+      )}
     </>
   );
 };

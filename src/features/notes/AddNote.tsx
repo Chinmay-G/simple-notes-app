@@ -1,14 +1,9 @@
 import CommonButton from "@/components/CommonButton";
 import { useCreateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
+import * as burnt from "burnt";
 import React, { useState } from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 const AddNote = ({ userEmail }: any) => {
   const [newNote, setNewNote] = useState<any>({ title: "", description: "" });
@@ -17,7 +12,7 @@ const AddNote = ({ userEmail }: any) => {
 
   function handleCreateNote() {
     if (!newNote?.title) {
-      Alert.alert("Enter Note title");
+      burnt.toast({ title: "Enter Note title", preset: "error" });
       return;
     }
     addMutation.mutate(
@@ -28,11 +23,11 @@ const AddNote = ({ userEmail }: any) => {
 
   return (
     <View style={styles.addTaskContainer}>
-      <Text style={styles.sectionHeading}>Add Task</Text>
+      <Text style={styles.sectionHeading}>Add Note</Text>
       <View>
         <Text style={commonStyles.inputlabel}>Title</Text>
         <TextInput
-          placeholder="Task title..."
+          placeholder="Title"
           value={newNote?.title}
           onChangeText={(text) =>
             setNewNote((prev: any) => ({ ...prev, title: text }))
@@ -45,7 +40,7 @@ const AddNote = ({ userEmail }: any) => {
         <TextInput
           multiline
           numberOfLines={3}
-          placeholder="Task description..."
+          placeholder="Description..."
           value={newNote?.description}
           onChangeText={(text) =>
             setNewNote((prev: any) => ({ ...prev, description: text }))
@@ -80,7 +75,7 @@ const styles = StyleSheet.create({
     boxShadow: "0px 1px 4px black",
   },
   sectionHeading: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 600,
   },
 });

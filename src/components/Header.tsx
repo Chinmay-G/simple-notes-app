@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     boxShadow: "0px 2px 2px black",
     backgroundColor: "white",
+    borderBottomWidth: 1,
   },
   emailText: {
     fontSize: 13,

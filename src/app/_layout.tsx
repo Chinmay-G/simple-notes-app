@@ -11,6 +11,7 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [session, setSession] = useState<any>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
 
   // Enable DevTools in development
   useTanStackQueryDevTools(queryClient);
@@ -32,9 +33,16 @@ export default function RootLayout() {
   }, []);
 
   async function fetchSession() {
-    const currentSession = await supabase.auth.getSession();
-    setSession(currentSession?.data?.session);
-    console.log(currentSession);
+    try {
+      setIsLoadingSession(true);
+      const currentSession = await supabase.auth.getSession();
+      setSession(currentSession?.data?.session);
+      console.log(currentSession);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingSession(false);
+    }
   }
 
   console.log("Session DATA: ", session, session ? true : false);
@@ -45,18 +53,18 @@ export default function RootLayout() {
         <SafeAreaView style={{ flex: 1 }}>
           <StatusBar barStyle={"dark-content"} backgroundColor={"white"} />
           <Stack initialRouteName={session ? "home" : "auth"}>
+            {/* <Stack.Screen name="loading" options={{ headerShown: false }} /> */}
             <Stack.Screen name="auth" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="home"
-              options={{ headerShown: false }}
-              initialParams={{ userEmail: session?.user?.email }}
-            />
+            <Stack.Protected guard={session}>
+              <Stack.Screen
+                name="home"
+                options={{ headerShown: false }}
+                initialParams={{ userEmail: session?.user?.email }}
+              />
+            </Stack.Protected>
           </Stack>
         </SafeAreaView>
       </SafeAreaProvider>
     </QueryClientProvider>
-    // <Stack>
-    //   <Stack.Screen name="home" options={{ headerShown: false }} />
-    // </Stack>
   );
 }

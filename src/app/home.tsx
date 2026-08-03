@@ -1,23 +1,20 @@
 import CommonButton from "@/components/CommonButton";
+import EmptyState from "@/components/EmptyState";
+import ErrorState from "@/components/ErrorState";
 import Header from "@/components/Header";
+import LoadingView from "@/components/LoadingView";
 import AddNote from "@/features/notes/AddNote";
 import NoteCard from "@/features/notes/NoteCard";
 import { useNotes } from "@/hooks/query";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 const Home = () => {
   const { userEmail } = useLocalSearchParams();
   const [showAddNote, setShowAddNote] = useState(false);
 
-  const { data: notes, isPending, isError } = useNotes();
+  const { data: notes, isPending, isError, refetch } = useNotes();
 
   // useEffect(() => {
   //   const channel = supabase.channel("tasks-channel");
@@ -57,16 +54,26 @@ const Home = () => {
         <View style={styles.notesContainer}>
           <Text style={styles.notesHeading}>Notes</Text>
 
-          {isPending && <ActivityIndicator size={30} color={"#000"} />}
-          {isError && <Text>Error fetching notes</Text>}
+          <View style={{ marginTop: 8, display: "flex", gap: 12 }}>
+            {isPending && <LoadingView />}
+            {isError && <ErrorState reload={refetch} />}
+            {notes && notes?.length === 0 && <EmptyState />}
+          </View>
 
-          {notes && (
+          {/* {notes && (
             <FlatList
               data={notes}
               contentContainerStyle={styles.tasksContainer}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <NoteCard note={item} />}
             />
+          )} */}
+          {notes && notes?.length > 0 && (
+            <ScrollView contentContainerStyle={styles.tasksContainer}>
+              {notes?.map((item) => (
+                <NoteCard key={item?.id} note={item} />
+              ))}
+            </ScrollView>
           )}
         </View>
       </View>
@@ -83,6 +90,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     gap: 18,
+    backgroundColor: "white",
   },
   notesContainer: {
     flex: 1,

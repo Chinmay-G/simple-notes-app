@@ -1,14 +1,9 @@
+import CommonButton from "@/components/CommonButton";
 import { useUpdateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
+import * as burnt from "burnt";
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import CommonModal from "../../components/CommonModal";
 
 type params = {
@@ -25,12 +20,12 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
 
   async function handleUpdateNote() {
     if (!note.id) {
-      Alert.alert("No id detected");
+      burnt.toast({ title: "No id detected", preset: "error" });
       return;
     }
 
     if (!note?.title.trim()) {
-      Alert.alert("Enter title to continue.");
+      burnt.toast({ title: "Enter title to continue.", preset: "error" });
       return;
     }
 
@@ -70,9 +65,14 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
           />
         </View>
 
-        <Pressable style={commonStyles.button} onPress={handleUpdateNote}>
+        {/* <Pressable style={commonStyles.button} onPress={handleUpdateNote}>
           <Text style={commonStyles.buttonText}>UPDATE</Text>
-        </Pressable>
+        </Pressable> */}
+        <CommonButton
+          title="UPDATE"
+          onPress={handleUpdateNote}
+          loading={updateMutation.isPending}
+        />
       </View>
     </CommonModal>
   );
