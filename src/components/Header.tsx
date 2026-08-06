@@ -2,7 +2,7 @@ import { logout } from "@/services/auth";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-const Header = ({ userEmail }: any) => {
+const Header = ({ userEmail }: { userEmail: string }) => {
   return (
     <View style={styles.screenHeader}>
       <Text style={styles.emailText}>{userEmail}</Text>

@@ -1,4 +1,3 @@
-import CommonButton from "@/components/CommonButton";
 import EmptyState from "@/components/EmptyState";
 import ErrorState from "@/components/ErrorState";
 import Header from "@/components/Header";
@@ -7,12 +6,11 @@ import AddNote from "@/features/notes/AddNote";
 import NoteCard from "@/features/notes/NoteCard";
 import { useNotes } from "@/hooks/query";
 import { useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 const Home = () => {
-  const { userEmail } = useLocalSearchParams();
-  const [showAddNote, setShowAddNote] = useState(false);
+  const { userEmail }: { userEmail: string } = useLocalSearchParams();
 
   const { data: notes, isPending, isError, refetch } = useNotes();
 
@@ -36,19 +34,12 @@ const Home = () => {
   //   };
   // }, []);
 
-  console.log("NOTES: ", notes);
-
   return (
     <>
       <Header userEmail={userEmail} />
       <View style={styles.screen}>
-        <CommonButton
-          title={showAddNote ? "Add Note -" : "Add Note +"}
-          onPress={() => setShowAddNote((prev) => !prev)}
-          style={{ alignSelf: "flex-end" }}
-        />
         {/* Add New Note */}
-        {showAddNote && <AddNote userEmail={userEmail} />}
+        <AddNote userEmail={userEmail} />
 
         {/* Notes List */}
         <View style={styles.notesContainer}>

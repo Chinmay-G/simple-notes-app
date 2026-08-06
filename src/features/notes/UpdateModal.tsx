@@ -1,6 +1,7 @@
 import CommonButton from "@/components/CommonButton";
 import { useUpdateNote } from "@/hooks/query";
 import { commonStyles } from "@/styles/commonStyles";
+import { Note } from "@/types/notes";
 import * as burnt from "burnt";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -9,11 +10,11 @@ import CommonModal from "../../components/CommonModal";
 type params = {
   isOpen: boolean;
   close: () => void;
-  initialTask: any;
+  initialTask: Note;
 };
 
 const UpdateModal = ({ isOpen, close, initialTask }: params) => {
-  const [note, setNote] = useState<any>(initialTask);
+  const [note, setNote] = useState<Note>(initialTask);
   const updateMutation = useUpdateNote();
 
   useEffect(() => setNote(initialTask), [initialTask]);
@@ -46,7 +47,7 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
             placeholder="Task title..."
             value={note?.title}
             onChangeText={(text) =>
-              setNote((prev: any) => ({ ...prev, title: text }))
+              setNote((prev) => ({ ...prev, title: text }))
             }
             style={commonStyles.textBox}
           />
@@ -59,7 +60,7 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
             placeholder="Task description..."
             value={note?.description}
             onChangeText={(text) =>
-              setNote((prev: any) => ({ ...prev, description: text }))
+              setNote((prev) => ({ ...prev, description: text }))
             }
             style={commonStyles.textBox}
           />

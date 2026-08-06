@@ -7,7 +7,7 @@ import * as burnt from "burnt";
 export function useNotes() {
   //   const { data, isPending, isError } = useQuery({
   const data = useQuery({
-    queryKey: ["todos"],
+    queryKey: ["notes"],
     queryFn: getNotes,
   });
 
@@ -22,7 +22,7 @@ export function useCreateNote() {
     mutationFn: createNote,
     onSuccess: (data) => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       burnt.toast({ title: "Task Added !", preset: "done" });
     },
     onError: (err) => {
@@ -39,8 +39,7 @@ export function useUpdateNote() {
     mutationFn: updateNote,
     onSuccess: (data) => {
       burnt.toast({ title: "Note Updated !", preset: "done" });
-      console.log("Updated data: ", data);
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
     onError: (err) => console.error(err?.message),
   });
@@ -54,7 +53,7 @@ export function useDeleteNote() {
     mutationFn: deleteNote,
     onSuccess: (data) => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       burnt.toast({ title: "Note Deleted !", preset: "done" });
     },
     onError: (err) => {

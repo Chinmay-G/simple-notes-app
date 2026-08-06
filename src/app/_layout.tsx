@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useTanStackQueryDevTools } from "@rozenite/tanstack-query-plugin";
+import { Session } from "@supabase/supabase-js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "react-native";
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const [session, setSession] = useState<any>(null);
-  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(true);
 
   // Enable DevTools in development
   useTanStackQueryDevTools(queryClient);
@@ -37,7 +38,6 @@ export default function RootLayout() {
       setIsLoadingSession(true);
       const currentSession = await supabase.auth.getSession();
       setSession(currentSession?.data?.session);
-      console.log(currentSession);
     } catch (err) {
       console.error(err);
     } finally {
@@ -45,17 +45,25 @@ export default function RootLayout() {
     }
   }
 
-  console.log("Session DATA: ", session, session ? true : false);
+  const sessionActive = session ? true : false;
 
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1 }}>
           <StatusBar barStyle={"dark-content"} backgroundColor={"white"} />
-          <Stack initialRouteName={session ? "home" : "auth"}>
-            {/* <Stack.Screen name="loading" options={{ headerShown: false }} /> */}
+
+          <Stack
+            initialRouteName={
+              isLoadingSession ? "loading" : sessionActive ? "home" : "auth"
+            }
+          >
+            <Stack.Protected guard={isLoadingSession}>
+              <Stack.Screen name="loading" options={{ headerShown: false }} />
+            </Stack.Protected>
+
             <Stack.Screen name="auth" options={{ headerShown: false }} />
-            <Stack.Protected guard={session}>
+            <Stack.Protected guard={sessionActive}>
               <Stack.Screen
                 name="home"
                 options={{ headerShown: false }}

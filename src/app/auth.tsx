@@ -1,9 +1,13 @@
 import { supabase } from "@/lib/supabase";
+import { LoginInput } from "@/types/auth";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 const Login = () => {
-  const [userInput, setUserInput] = useState<any>({ email: "", password: "" });
+  const [userInput, setUserInput] = useState<LoginInput>({
+    email: "",
+    password: "",
+  });
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
 
   async function handleSubmit() {
@@ -46,7 +50,7 @@ const Login = () => {
             value={userInput?.email}
             textContentType="emailAddress"
             onChangeText={(text) =>
-              setUserInput((prev: any) => ({ ...prev, email: text }))
+              setUserInput((prev) => ({ ...prev, email: text }))
             }
             style={styles.textBox}
           />
@@ -59,7 +63,7 @@ const Login = () => {
             placeholder="password..."
             value={userInput?.password}
             onChangeText={(text) =>
-              setUserInput((prev: any) => ({ ...prev, password: text }))
+              setUserInput((prev) => ({ ...prev, password: text }))
             }
             style={styles.textBox}
           />

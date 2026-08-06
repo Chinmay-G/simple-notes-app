@@ -1,12 +1,15 @@
+import { Note } from "@/types/notes";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import UpdateModal from "./UpdateModal";
 
-const NoteCard = ({ note: item }: { note: any }) => {
-  const [updateTask, setUpdateTask] = useState<any>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<any>(null);
+const NoteCard = ({ note: item }: { note: Note }) => {
+  const [updateTask, setUpdateTask] = useState<typeof item | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<
+    typeof item | null
+  >(null);
 
   return (
     <>
@@ -32,19 +35,19 @@ const NoteCard = ({ note: item }: { note: any }) => {
         </View>
       </View>
 
-      {/* {updateTask && ( */}
-      <UpdateModal
-        isOpen={updateTask ? true : false}
-        close={() => setUpdateTask(null)}
-        initialTask={updateTask}
-      />
-      {/* )} */}
+      {updateTask && (
+        <UpdateModal
+          isOpen={updateTask ? true : false}
+          close={() => setUpdateTask(null)}
+          initialTask={updateTask}
+        />
+      )}
 
-      {setIsDeleteModalOpen && (
+      {isDeleteModalOpen && (
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen ? true : false}
-          close={() => setIsDeleteModalOpen(false)}
-          note={isDeleteModalOpen}
+          close={() => setIsDeleteModalOpen(null)}
+          note={isDeleteModalOpen as Note}
         />
       )}
     </>

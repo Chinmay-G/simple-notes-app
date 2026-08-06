@@ -1,6 +1,7 @@
 import CommonButton from "@/components/CommonButton";
 import CommonModal from "@/components/CommonModal";
 import { useDeleteNote } from "@/hooks/query";
+import { Note } from "@/types/notes";
 import * as burnt from "burnt";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -12,7 +13,7 @@ const DeleteConfirmationModal = ({
 }: {
   isOpen: boolean;
   close: () => void;
-  note: any;
+  note: Note;
 }) => {
   const deleteMutation = useDeleteNote();
 

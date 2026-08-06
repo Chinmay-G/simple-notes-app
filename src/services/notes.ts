@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabase";
+import { Note, NoteInput } from "@/types/notes";
 import * as burnt from "burnt";
 
 // Get Notes
-export async function getNotes() {
+export async function getNotes(): Promise<Note[]> {
   const { data, error } = await supabase.from("tasks").select();
 
   if (error) {
@@ -17,10 +18,10 @@ export async function createNote({
   newNote,
   userEmail,
 }: {
-  newNote: any;
+  newNote: NoteInput;
   userEmail: string;
 }) {
-  const { data, error }: any = await supabase
+  const { data, error } = await supabase
     .from("tasks")
     .insert({ ...newNote, email: userEmail })
     .select()
@@ -34,16 +35,13 @@ export async function createNote({
 }
 
 // Delete a Note
-export async function deleteNote(id: any) {
+export async function deleteNote(id: number) {
   if (!id) {
     burnt.toast({ title: "No id detected", preset: "error" });
     return;
   }
 
-  const { data, error }: any = await supabase
-    .from("tasks")
-    .delete()
-    .eq("id", id);
+  const { data, error } = await supabase.from("tasks").delete().eq("id", id);
 
   if (error) {
     throw new Error(`Error deleting note: ${error?.message}`);
@@ -53,8 +51,8 @@ export async function deleteNote(id: any) {
 }
 
 // Update a Note
-export async function updateNote(note: any) {
-  const { data, error }: any = await supabase
+export async function updateNote(note: Note) {
+  const { data, error } = await supabase
     .from("tasks")
     .update(note)
     .eq("id", note?.id)
