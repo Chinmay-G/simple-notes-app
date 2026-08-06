@@ -184,7 +184,7 @@ Updated Notes List
 
 # 📸 Screenshots
 
-| Sign In                     | Notes List                 |
+<!-- | Sign In                     | Notes List                 |
 | --------------------------- | -------------------------- |
 | ![](screenshots/login.jpeg) | ![](screenshots/home.jpeg) |
 
@@ -194,7 +194,15 @@ Updated Notes List
 
 | Delete Confirmation          |
 | ---------------------------- |
-| ![](screenshots/delete.jpeg) |
+| ![](screenshots/delete.jpeg) | -->
+
+<p align="center">
+  <img src="screenshots/login.jpeg" width="220"/>
+  <img src="screenshots/home.jpeg" width="220"/>
+  <img src="screenshots/add.jpeg" width="220"/>
+  <img src="screenshots/update.jpeg" width="220"/>
+  <img src="screenshots/delete.jpeg" width="220"/>
+</p>
 
 ---
 
