@@ -196,7 +196,7 @@ Updated Notes List
 | ---------------------------- |
 | ![](screenshots/delete.jpeg) | -->
 
-<p align="justify">
+<p align="center">
   <img src="screenshots/login.jpeg" width="220"/>
   <img src="screenshots/home.jpeg" width="220"/>
   <img src="screenshots/add.jpeg" width="220"/>
