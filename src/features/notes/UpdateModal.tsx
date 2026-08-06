@@ -37,14 +37,14 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
     <CommonModal
       isOpen={isOpen}
       close={close}
-      title="Update Task"
+      title="Update Note"
       //   containerStyle={styles.container}
     >
       <View style={styles.container}>
         <View>
           <Text style={commonStyles.inputlabel}>Title</Text>
           <TextInput
-            placeholder="Task title..."
+            placeholder="Note title..."
             value={note?.title}
             onChangeText={(text) =>
               setNote((prev) => ({ ...prev, title: text }))
@@ -57,7 +57,7 @@ const UpdateModal = ({ isOpen, close, initialTask }: params) => {
           <TextInput
             multiline
             numberOfLines={3}
-            placeholder="Task description..."
+            placeholder="Note description..."
             value={note?.description}
             onChangeText={(text) =>
               setNote((prev) => ({ ...prev, description: text }))

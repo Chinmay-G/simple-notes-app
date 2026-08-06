@@ -1,50 +1,300 @@
-# Welcome to your Expo app 👋
+# 📝 Simple Notes App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern Notes application built with **React Native (Expo)** and **Supabase** that allows users to securely manage their personal notes.
 
-## Get started
+The app includes **Email Authentication** and complete **CRUD (Create, Read, Update, Delete)** functionality, ensuring every user's notes remain private and accessible only to them.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+# 📖 Project Overview
 
-2. Start the app
+Simple Notes App is a mobile application developed using **React Native**, **Expo Router**, and **Supabase**.
 
-   ```bash
-   npx expo start
-   ```
+Users can create an account using their email, securely log in, and perform complete CRUD operations on their notes.
 
-In the output, you'll find options to open the app in a
+The project demonstrates:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Authentication using Supabase Auth
+- Database integration with Supabase PostgreSQL
+- User-specific data handling
+- React Query for server state management
+- Clean component-based architecture
+- Mobile-first responsive UI
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+# ✨ Features
 
-When you're ready, run:
+## Authentication
 
-```bash
-npm run reset-project
+- User Sign Up with Email & Password
+- User Sign In
+- Secure Logout
+- Persistent Login Session
+
+## Notes Management
+
+- Create new notes
+- View all notes
+- Update existing notes
+- Delete notes
+- Delete confirmation dialog
+- Real-time UI updates after CRUD operations
+
+## User Experience
+
+- Clean and minimal UI
+- Modal-based Add/Edit forms
+- Loading states
+- Error handling
+- Protected routes
+- Mobile-friendly design
+
+---
+
+# 🛠 Tech Stack
+
+### Frontend
+
+- React Native
+- Expo
+- Expo Router
+- TypeScript
+
+### Backend
+
+- Supabase
+- PostgreSQL Database
+- Supabase Authentication
+
+### State Management
+
+- TanStack React Query
+
+### Icons
+
+- Expo Vector Icons
+
+---
+
+# 📁 Folder Structure
+
+```
+src/
+│
+├── app/
+│   ├── layout.tsx
+│   ├── auth.tsx
+│   ├── home.tsx
+│   └── loading.tsx
+│
+├── assets/
+│   └── images/
+│
+├── components/
+│   └── UI Components
+│
+├── features/
+│   ├── auth/
+│   └── notes/
+│
+├── hooks/
+│   └── query.tsx
+│
+├── lib/
+│   ├── api.ts
+│   └── supabase.ts
+│
+├── services/
+│   ├── auth.ts
+│   └── notes.ts
+│
+├── styles/
+│   └── commonStyles.ts
+│
+├── types/
+│   ├── auth.ts
+│   └── notes.ts
+│
+├── constants/
+│
+└── utils/
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+# 🏗 Architecture
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+             User
+               │
+               ▼
+      React Native UI
+               │
+               ▼
+     React Query Hooks
+               │
+               ▼
+     Service Layer (API)
+               │
+               ▼
+       Supabase Client
+        │           │
+        ▼           ▼
+ Authentication   PostgreSQL
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Authentication Flow
 
-## Join the community
+```
+User
+   │
+   ▼
+Sign Up / Sign In
+   │
+   ▼
+Supabase Authentication
+   │
+   ▼
+Session Created
+   │
+   ▼
+Protected Notes Screen
+```
 
-Join our community of developers creating universal apps.
+### CRUD Flow
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+User Action
+      │
+      ▼
+React Component
+      │
+      ▼
+React Query Mutation
+      │
+      ▼
+Supabase Database
+      │
+      ▼
+Updated Notes List
+```
+
+---
+
+# 📸 Screenshots
+
+| Sign In                     | Notes List                 |
+| --------------------------- | -------------------------- |
+| ![](screenshots/login.jpeg) | ![](screenshots/home.jpeg) |
+
+| Add Note                  | Update Note                  |
+| ------------------------- | ---------------------------- |
+| ![](screenshots/add.jpeg) | ![](screenshots/update.jpeg) |
+
+| Delete Confirmation          |
+| ---------------------------- |
+| ![](screenshots/delete.jpeg) |
+
+---
+
+# ⚙ Setup
+
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/simple-notes-app.git
+```
+
+---
+
+## 2. Install dependencies
+
+```bash
+npm install
+```
+
+or
+
+```bash
+yarn
+```
+
+---
+
+## 3. Create environment variables
+
+Create a `.env` file in the root directory.
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+
+EXPO_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+---
+
+## 4. Start the project
+
+```bash
+npx expo start
+```
+
+---
+
+## 5. Run on Android
+
+```bash
+npx expo run:android
+```
+
+or scan the QR code using Expo Go.
+
+---
+
+# 🚀 Future Improvements
+
+- Search notes
+- Categories / Tags
+- Rich Text Editor
+- Pin important notes
+- Archive notes
+- Dark Mode
+- Offline support
+- Image attachments
+- Voice notes
+- Reminder notifications
+- Note sharing
+<!-- - Sorting & Filtering
+- Password reset
+- Email verification
+- Profile page
+- Unit testing
+- E2E testing
+- CI/CD pipeline -->
+
+---
+
+<!--
+# 📚 Learning Outcomes
+
+This project helped me understand:
+
+- React Native fundamentals
+- Expo Router navigation
+- Supabase Authentication
+- PostgreSQL with Supabase
+- CRUD operations
+- React Query
+- Async programming
+- Component-based architecture
+- API integration
+- Mobile UI development
+
+--- -->
+
+## 👨‍💻 Author
+
+**Chinmay Gowda**
+
+GitHub: https://github.com/Chinmay-G
